@@ -1,24 +1,34 @@
-import { useState } from 'react';
+import { useEffect, useState } from "react";
 
+export const useForm = (initialState = {}) => {
+  const [values, setValues] = useState(initialState);
+  const [hasAtLeastOneField, setHasAtLeastOneField] = useState(false);
 
-export const useForm = ( initialState = {} ) => {
-    
-    const [values, setValues] = useState(initialState);
-
-    const reset = () => {
-        setValues( initialState );
+  useEffect(() => {
+    let changeValue = false;
+    for (const value of Object.values(values)) 
+      if (value !== null && value !== "") {
+        changeValue = true;
+        break;
+      }
     }
 
+    changeValue === true
+      ? setHasAtLeastOneField(true)
+      : setHasAtLeastOneField(false);
+  }, [values]);
 
-    const handleInputChange = ({ target }) => {
+  const reset = () => {
+    setValues(initialState);
+  };
 
-        setValues({
-            ...values,
-            [ target.name ]: target.value
-        });
+  const handleInputChange = ({ target }) => {
+    setValues({
+      ...values,
+      [target.name]: target.value
+    });
+  };
 
-    }
+  return [values, handleInputChange, hasAtLeastOneField, reset];
+};
 
-    return [ values, handleInputChange, reset ];
-
-}
